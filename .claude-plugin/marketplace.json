@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "smoneyan",
+  "description": "Claude Code skills for GitHub Actions analysis and DevOps productivity",
+  "owner": {
+    "name": "smoneyan"
+  },
+  "plugins": [
+    {
+      "name": "github-actions-storage",
+      "description": "Analyze GitHub Actions artifact storage usage across an entire organization or from a billing CSV report — identify top consuming repositories, calculate costs, and build a cleanup plan.",
+      "source": "./plugins/github-actions-storage",
+      "category": "productivity",
+      "keywords": ["github", "actions", "storage", "artifacts", "billing", "cost"]
+    },
+    {
+      "name": "github-repo-artifact-analysis",
+      "description": "Deep-dive artifact storage analysis for a specific GitHub repository — find top consuming artifacts, identify cleanup opportunities, and optimize workflows.",
+      "source": "./plugins/github-repo-artifact-analysis",
+      "category": "productivity",
+      "keywords": ["github", "actions", "artifacts", "cleanup", "storage", "repository"]
+    }
+  ]
+}
