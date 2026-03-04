@@ -1,7 +1,0 @@
-{
-  "name": "github-repo-artifact-analysis",
-  "description": "Deep-dive artifact storage analysis for a specific GitHub repository — find top consuming artifacts, identify cleanup opportunities, and optimize workflows.",
-  "author": {
-    "name": "smoneyan"
-  }
-}

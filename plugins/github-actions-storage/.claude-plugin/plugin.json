@@ -1,7 +1,0 @@
-{
-  "name": "github-actions-storage",
-  "description": "Analyze GitHub Actions artifact storage usage across an entire organization or from a billing CSV report — identify top consuming repositories, calculate costs, and build a cleanup plan.",
-  "author": {
-    "name": "smoneyan"
-  }
-}

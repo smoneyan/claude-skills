@@ -1,6 +1,6 @@
 # smoneyan/claude-skills
 
-A Claude Code plugin marketplace with skills for GitHub Actions analysis and DevOps productivity.
+Claude Code skills for GitHub Actions analysis and DevOps productivity.
 
 ## Install
 
@@ -8,33 +8,32 @@ A Claude Code plugin marketplace with skills for GitHub Actions analysis and Dev
 claude plugin add smoneyan/claude-skills
 ```
 
-## Skills
+## Plugins
 
-### github-actions-storage
+### github-skills
 
-Analyze GitHub Actions artifact storage usage across an **entire organization** or from a billing CSV report.
+A collection of GitHub Actions analysis skills.
 
-**Triggers when you ask about:**
-- Org-wide Actions storage costs
-- Analyzing a billing report CSV
-- Which repositories are using the most storage
-- Reducing your GitHub Actions bill
+| Skill | Description |
+|-------|-------------|
+| `github-actions-storage` | Analyze artifact storage across an entire org or billing CSV — rank repos by usage, estimate costs, build cleanup plans |
+| `github-repo-artifact-analysis` | Deep-dive analysis for a specific repo — top artifacts, age distribution, ready-to-run cleanup commands |
 
-### github-repo-artifact-analysis
+## Repository Structure
 
-Deep-dive artifact storage analysis for a **specific repository**.
-
-**Triggers when you ask about:**
-- Artifact storage in a specific repo
-- Top artifacts by size
-- Cleaning up a repo's Actions storage
-- Artifact costs for a named repository
+```
+claude-skills/
+├── .claude-plugin/
+│   └── marketplace.json     # marketplace descriptor
+├── skills/
+│   ├── github-actions-storage/
+│   │   └── SKILL.md
+│   └── github-repo-artifact-analysis/
+│       └── SKILL.md
+└── README.md
+```
 
 ## Adding More Skills
 
-Each skill lives in `plugins/<skill-name>/` with:
-- `.claude-plugin/plugin.json` — plugin descriptor
-- `skills/<skill-name>/SKILL.md` — skill content
-- `README.md` — documentation
-
-After adding a new plugin, register it in `.claude-plugin/marketplace.json`.
+1. Create `skills/<skill-name>/SKILL.md`
+2. Add the path to the `skills` array in `.claude-plugin/marketplace.json`
