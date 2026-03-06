@@ -1,0 +1,23 @@
+{
+  "skill_name": "github-billing-usage-reports",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Show me the top consumers of Actions minutes and Actions artifact storage for the singapore-press-holdings enterprise for the current month (March 2026).",
+      "expected_output": "A ranked table of top repositories by Actions minutes consumed and a separate ranked table for artifact storage (GB-day), plus a summary of total spend.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Pull a billing report for singapore-press-holdings from March 1 to March 5 2026. What are the top 10 repos burning the most Actions minutes, and which runner types (Linux/macOS/Windows) are they using?",
+      "expected_output": "Top 10 repos by Actions minutes with breakdown by runner type (Linux, macOS, Windows), using the detailed billing report.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "For singapore-press-holdings, give me a full cost breakdown by product for the first week of March 2026 (March 1–7). How much are we spending on Actions vs Copilot vs GHAS?",
+      "expected_output": "Total spend per product (actions, copilot, ghas, packages, git_lfs) with dollar amounts and percentages of total.",
+      "files": []
+    }
+  ]
+}
