@@ -11,10 +11,13 @@
     {
       "name": "github-skills",
       "description": "GitHub Actions storage and artifact analysis skills — identify top consuming repositories, analyze billing reports, deep-dive artifact cleanup, and optimize workflow retention policies",
+      "source": "./",
+      "strict": false,
       "skills": [
         "./skills/github-actions-storage",
         "./skills/github-repo-artifact-analysis",
-        "./skills/github-billing-usage-reports"      ]
+        "./skills/github-billing-usage-reports"
+      ]
     }
   ]
 }
