@@ -13,6 +13,8 @@ Ask or infer from context:
 - **Mode A — Billing CSV**: User has a GitHub billing report CSV → parse it for storage data
 - **Mode B — Live Org Query**: User provides an org name → query via `gh` CLI
 
+> **Preferred for GitHub Enterprise**: Use the `github-billing-usage-reports` skill to generate and download a billing CSV, then analyze it here (Mode A). The enterprise slug and org name differ — the live org query (Mode B) won't work against an enterprise slug directly.
+
 ---
 
 ## Mode A: Billing CSV Analysis
@@ -47,10 +49,10 @@ for repo, qty in sorted(data.items(), key=lambda x: -x[1])[:20]:
 ```
 
 **Key Metrics to Extract:**
-- GB-hours per repository (raw quantity)
-- Average daily GB (divide by 24)
+- GB-hours per repository (raw quantity) — the `unit_type` for `actions_storage` SKU is `gigabyte-hours`, NOT GB-day
+- Average daily GB = GBh ÷ 24
 - Percentage of total org storage
-- Estimated monthly cost at $0.008/GB-hour
+- Estimated monthly cost at $0.008/GB-hour (often fully discounted to $0 on Enterprise plans)
 
 **Present as:**
 ```
@@ -95,6 +97,54 @@ gh api "repos/{org}/{repo}/actions/artifacts?per_page=100" --paginate \
 
 ---
 
+## Phase 2.5: Check Expired vs Unexpired Artifacts
+
+**Critical step before recommending cleanup** — billing storage numbers are dominated by expired artifacts pending GitHub's async garbage collection. Always check the live artifact status for the top repos:
+
+```bash
+gh api "repos/{org}/{repo}/actions/artifacts?per_page=100" --paginate \
+  --jq '[.artifacts[] | {name, size_in_bytes, created_at, expires_at, expired}]' \
+  > /tmp/artifacts.json
+```
+
+Then analyze with Python:
+```python
+import json, re
+from datetime import datetime, timezone
+
+with open('/tmp/artifacts.json') as f:
+    content = f.read().strip()
+
+all_artifacts = []
+for block in re.split(r'\]\s*\[', content.strip('[]')):
+    try:
+        all_artifacts.extend(json.loads('[' + block + ']'))
+    except:
+        pass
+
+now = datetime.now(timezone.utc)
+expired = [a for a in all_artifacts if a.get('expired')]
+unexpired = [a for a in all_artifacts if not a.get('expired')]
+
+print(f"Expired:   {len(expired)} artifacts  |  {sum(a['size_in_bytes'] for a in expired)/1024/1024:.0f} MB")
+print(f"Unexpired: {len(unexpired)} artifacts  |  {sum(a['size_in_bytes'] for a in unexpired)/1024/1024:.0f} MB")
+
+for a in sorted(unexpired, key=lambda x: -x['size_in_bytes'])[:15]:
+    exp = a.get('expires_at') or 'N/A'
+    days_left = ''
+    if exp != 'N/A':
+        exp_dt = datetime.fromisoformat(exp.replace('Z', '+00:00'))
+        days_left = f"  ({int((exp_dt - now).total_seconds()/86400)}d left)"
+    print(f"  {a['size_in_bytes']/1024/1024:>8.1f} MB  created={a['created_at'][:10]}  expires={exp[:10]}{days_left}  {a['name']}")
+```
+
+**Interpreting results:**
+- If most storage is **expired** → GitHub GC will reclaim it automatically; no immediate action needed
+- If most storage is **unexpired** → investigate artifact type and retention-days setting
+- **Common culprit**: Playwright E2E test reports are 100–160 MB each and accumulate fast; 10-day retention × many parallel runs = GBs of live storage
+
+---
+
 ## Phase 3: Action Plan
 
 After identifying the top consumers, generate a prioritized action plan:
@@ -126,6 +176,14 @@ gh api "repos/{org}/{repo}/actions/artifacts?per_page=100" --paginate \
    - uses: actions/upload-artifact@v4
      with:
        retention-days: 30  # Set org default
+   ```
+   **For Playwright/E2E test reports specifically** — these are large (100–160 MB each) and rarely needed after a few days. Use 3–5 days max:
+   ```yaml
+   - uses: actions/upload-artifact@v4
+     with:
+       name: playwright-report
+       path: playwright-report/
+       retention-days: 3
    ```
 
 2. **Automated cleanup workflow** — add to `.github/workflows/artifact-cleanup.yml`:
