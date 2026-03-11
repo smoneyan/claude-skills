@@ -1,0 +1,19 @@
+# Packaged skill artifacts (build outputs, not source)
+*.skill
+
+# Eval workspaces (generated during skill development/testing)
+*-workspace/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Temp files
+/tmp/
+*.log
