@@ -1,4 +1,4 @@
-# smoneyan/claude-skills
+# DevSecOps Skills for Claude Code
 
 Claude Code skills for GitHub and security engineering productivity.
 
